@@ -1,30 +1,42 @@
-import time
-import datetime
-import pygame
+import sys
+from PyQt5.QtWidgets import QApplication,QWidget,QLabel,QVBoxLayout
+from PyQt5.QtCore import QTimer,QTime,Qt
 
+class DigitalClock(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.time_label=QLabel(self)
+        self.timer=QTimer(self)
+        self.initUI()
 
-def set_alarm(alarm_set):
-    print(f"Alarm set for {alarm_set}")
-    sound_file="[iSongs.info] 02 - Firestorm.mp3"
-    is_running=True
-    while is_running:
-        current_time=datetime.datetime.now().strftime("%I:%M:%S %p")
-        print(current_time)
-        if current_time==alarm_set:
-            print("WAke up")
-            pygame.mixer.init()
-            pygame.mixer.music.load(sound_file)
-            pygame.mixer.music.play()
-            while  pygame.mixer.music.get_busy():
-                time.sleep(1)
+    def initUI(self):
+        self.setWindowTitle("Digital Clock")
+        self.setGeometry(600,400,300,100)
 
-            is_running=False
+        vbox=QVBoxLayout()
+        vbox.addWidget(self.time_label)
+        self.setLayout(vbox)
 
-        time.sleep(1)
+        self.time_label.setAlignment(Qt.AlignCenter)
 
+        self.time_label.setStyleSheet("font-size: 150px;"
+                                      
+                                      "color:pink;")
+        self.setStyleSheet("background-color:black;")
+
+        self.timer.timeout.connect(self.update_time)
+        self.timer.start(1000)
+
+        self.update_time()
+    def update_time(self):
+        current_time=QTime.currentTime().toString("hh:mm:ss AP")
+        self.time_label.setText(current_time)
 
 if __name__=="__main__":
-    alarm_set=input("Enter the time to set(HH:MM:SS AM/pm): ")
-    set_alarm(alarm_set)
+    app=QApplication(sys.argv)
+    clock=DigitalClock()
+    clock.show()
+    sys.exit(app.exec_())
+
 
 
